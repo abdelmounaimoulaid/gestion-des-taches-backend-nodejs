@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation API - Gestion des Tâches</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Configuration */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --text-main: #000000;
+      --text-secondary: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --code-bg: #f8fafc;
+      --white: #ffffff;
+      --page-width: 595px;
+      --page-height: 842px;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Page Structure */
+    .page {
+      width: var(--page-width);
+      background: var(--white);
+      padding: 40px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      position: relative;
+      box-sizing: border-box;
+      display: block;
+      min-height: var(--page-height);
+      /* Allow expansion */
+    }
+
+    /* Print Settings */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+        width: 595px;
+        height: auto;
+        /* Allow flow */
+        min-height: 842px;
+        overflow: visible;
+        padding-bottom: 0;
+      }
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 24pt;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 10px;
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      margin-bottom: 10px;
+      margin-top: 18px;
+      color: var(--text-main);
+      background: var(--code-bg);
+      padding: 8px 12px;
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h4 {
+      font-size: 10.5pt;
+      font-weight: 600;
+      margin-bottom: 8px;
+      margin-top: 12px;
+      color: var(--text-secondary);
+    }
+
+    p {
+      font-size: 9pt;
+      line-height: 1.5;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    /* Cover Page */
+    .cover-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      width: 150px;
+      /* Scaled down logo too */
+      margin-bottom: 40px;
+    }
+
+    .cover-title {
+      margin-bottom: 20px;
+    }
+
+    .cover-subtitle {
+      font-size: 14pt;
+      color: var(--text-muted);
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+
+    .cover-meta {
+      margin-top: auto;
+      border-top: 2px solid var(--primary);
+      padding-top: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12pt;
+      color: var(--text-muted);
+    }
+
+    /* Section Description */
+    .section-description {
+      background: var(--white);
+      padding: 10px;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-description p {
+      margin-bottom: 5px;
+    }
+
+    .section-description p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Code Blocks */
+    .content-split {
+      display: block;
+      margin-bottom: 12px;
+      /* page-break-inside: avoid; REMOVED */
+    }
+
+    .code-column {
+      width: 100%;
+      background: var(--code-bg);
+      border: 2px solid var(--primary);
+      border-radius: 6px;
+      /* overflow: hidden; REMOVED to allow page breaks */
+      font-size: 7pt;
+      /* Resize code font */
+      margin-bottom: 12px;
+      /* page-break-inside: avoid; REMOVED */
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .file-header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 6px 10px;
+      font-size: 8pt;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .file-header i {
+      font-size: 10pt;
+    }
+
+    pre {
+      margin: 0;
+      padding: 8px;
+      background: transparent;
+      font-family: 'Fira Code', monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.3;
+    }
+
+    code {
+      font-family: 'Fira Code', monospace;
+      color: #1e293b;
+    }
+
+    /* Syntax Highlighting */
+    .kw {
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    /* Keyword */
+    .str {
+      color: #16a34a;
+    }
+
+    /* String */
+    .fn {
+      color: #7c3aed;
+    }
+
+    /* Function */
+    .com {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    /* Comment */
+    .obj {
+      color: #db2777;
+    }
+
+    /* Object */
+
+    /* Fonctionnement Section */
+    .functionality {
+      background: var(--white);
+      padding: 10px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .functionality h4 {
+      color: var(--primary);
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 10pt;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .functionality ol,
+    .functionality ul {
+      margin-left: 14px;
+      line-height: 1.5;
+      margin-bottom: 0;
+    }
+
+    .functionality li {
+      margin-bottom: 5px;
+      color: var(--text-secondary);
+      font-size: 9pt;
+    }
+
+    .functionality code {
+      background: var(--code-bg);
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 8pt;
+      border: 1px solid var(--border-color);
+      color: var(--primary-dark);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      background: var(--primary);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 8.5pt;
+      font-weight: 600;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Lists */
+    ul {
+      line-height: 1.6;
+    }
+
+    li {
+      margin-bottom: 5px;
+      color: var(--text-secondary);
+    }
+
+    strong {
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    /* Diagrams */
+    .diagram-box {
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      background: var(--code-bg);
+      text-align: center;
+    }
+
+    .flow-step {
+      display: inline-block;
+      padding: 8px 12px;
+      background: var(--white);
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      font-weight: bold;
+      border-radius: 6px;
+      margin: 6px;
+      font-size: 9pt;
+    }
+
+    .arrow {
+      color: var(--primary);
+      margin: 0 8px;
+      font-weight: 600;
+      font-size: 10pt;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+      margin-bottom: 20px;
+      border: 2px solid var(--primary);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: var(--white);
+      text-align: left;
+      padding: 12px;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--white);
+    }
+
+    tr:hover td {
+      background: var(--code-bg);
+    }
+
+    .method {
+      font-weight: bold;
+      font-family: monospace;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: var(--white);
+    }
+
+    .GET {
+      background-color: #2563eb;
+    }
+
+    .POST {
+      background-color: #16a34a;
+    }
+
+    .PUT {
+      background-color: #d97706;
+    }
+
+    .DELETE {
+      background-color: #dc2626;
+    }
+
+    /* Footer */
+    .page-footer {
+      margin-top: auto;
+      text-align: center;
+      font-size: 9pt;
+      color: var(--text-muted);
+      padding-top: 15px;
+      border-top: 2px solid var(--primary);
+    }
+
+    .page-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Page 1: Cover -->
+  <div class="page"
+    style="display: flex; flex-direction: column; height: 842px !important; min-height: 842px !important;">
+    <div class="cover-content">
+      <img
+        src="https://sspark.genspark.ai/cfimages?u1=TYAuaXbECzfUizby3XT9RTtq5Hxb5XV67RMYtht0aulODAyBU7alm7eZqHFFd3r3YOkGysDV2OK8mkkhbwE6DraC2Q53ULcGgu%2BjGfEOasZpW5d7&u2=Q61Ltr7lQxkw7yMp&width=2560"
+        alt="ISMAGI Logo" class="logo">
+      <h1 class="cover-title" style="color: rgb(0, 69, 145); font-size: 36pt;">API de Gestion des Tâches</h1>
+      <p class="cover-subtitle">Application Node.js + Express + MongoDB</p>
+      <p class="cover-subtitle"><strong>Réalisé par : </strong>OULAID Abdelmounaim</p>
+    </div>
+
+    <div class="page-footer">
+      <a href="https://github.com/abdelmounaimoulaid/gestions-des-taches"
+        target="_blank">https://github.com/abdelmounaimoulaid/gestions-des-taches</a>
+    </div>
+  </div>
+
+  <!-- Page 2: Structure des Fichiers -->
+  <div class="page">
+    <h2>Structure des Fichiers du Projet</h2>
+
+    <div class="section-description">
+      <p>
+        Le projet suit une architecture MVC claire avec séparation des responsabilités. Tous les fichiers sources
+        sont organisés dans le dossier <code>src/</code> pour une meilleure maintenabilité.
+      </p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-folder-tree"></i>
+          <span>Arborescence du Projet</span>
+        </div>
+        <pre><code>📁 tasks/
+├── 📄 server.js                 <span class="com"># Point d'entrée principal</span>
+├── 📄 package.json              <span class="com"># Dépendances npm</span>
+├── 📄 .env                      <span class="com"># Variables d'environnement</span>
+├── 📄 .gitignore                <span class="com"># Fichiers exclus de Git</span>
+├── 📄 README.md                 <span class="com"># Documentation</span>
+│
+└── 📁 src/
+    ├── 📄 app.js                <span class="com"># Configuration Express</span>
+    │
+    ├── 📁 models/               <span class="com"># Schémas MongoDB</span>
+    │   ├── 📄 tasksModel.js     <span class="com"># Modèle Tâches</span>
+    │   └── 📄 usersModel.js     <span class="com"># Modèle Utilisateurs</span>
+    │
+    ├── 📁 controllers/          <span class="com"># Logique métier</span>
+    │   ├── 📄 taskController.js <span class="com"># CRUD Tâches</span>
+    │   └── 📄 userController.js <span class="com"># Auth Utilisateurs</span>
+    │
+    ├── 📁 routes/               <span class="com"># Définition des endpoints</span>
+    │   ├── 📄 tasksRoute.js     <span class="com"># Routes /api/tasks</span>
+    │   └── 📄 usersRoute.js     <span class="com"># Routes /api/auth</span>
+    │
+    └── 📁 middlewares/          <span class="com"># Middlewares personnalisés</span>
+        └── 📄 auth.js           <span class="com"># Vérification JWT</span></code></pre>
+      </div>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-info-circle"></i> Description des Dossiers</h4>
+      <ul>
+        <li><strong>server.js</strong> : Démarre le serveur HTTP et écoute sur le port configuré</li>
+        <li><strong>src/app.js</strong> : Configure Express, les middlewares de sécurité, et la connexion MongoDB</li>
+        <li><strong>src/models/</strong> : Définit les schémas Mongoose pour la structure des données</li>
+        <li><strong>src/controllers/</strong> : Contient la logique métier pour chaque ressource (Tasks, Users)</li>
+        <li><strong>src/routes/</strong> : Mappe les URLs HTTP aux fonctions des contrôleurs</li>
+        <li><strong>src/middlewares/</strong> : Middlewares personnalisés (authentification JWT)</li>
+      </ul>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-code-branch"></i> Flux de Requête</h4>
+      <ol>
+        <li><strong>server.js</strong> reçoit la requête HTTP</li>
+        <li><strong>app.js</strong> applique les middlewares de sécurité (Helmet, CORS, Rate Limiting)</li>
+        <li><strong>routes/</strong> identifie le contrôleur à appeler</li>
+        <li><strong>middlewares/auth.js</strong> vérifie le token JWT (si route protégée)</li>
+        <li><strong>controllers/</strong> exécute la logique métier</li>
+        <li><strong>models/</strong> interagit avec MongoDB via Mongoose</li>
+        <li>Réponse JSON renvoyée au client</li>
+      </ol>
+    </div>
+
+
+  </div>
+
+  <!-- Page 3: Vue d'ensemble -->
+  <div class="page">
+    <h2>Vue d'ensemble du Projet</h2>
+
+    <div>
+      <h3><i class="fas fa-info-circle"></i> Description</h3>
+      <div class="section-description">
+        <p>
+          Ce projet consiste en la création d'une API RESTful robuste pour la gestion de tâches (To-Do List).
+          L'application permet aux utilisateurs de s'inscrire, de s'authentifier de manière sécurisée et de
+          gérer leurs
+          tâches personnelles (création, lecture, mise à jour, suppression) à travers des endpoints protégés.
+        </p>
+        <p>
+          L'accent a été mis sur la sécurité (protection contre les injections, XSS, headers HTTP sécurisés)
+          et la
+          performance (architecture non-bloquante de Node.js).
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <h3><i class="fas fa-layer-group"></i> Technologies Utilisées</h3>
+      <div style="margin-top: 15px; margin-bottom: 25px">
+        <span class="badge">Node.js</span>
+        <span class="badge">Express.js</span>
+        <span class="badge">MongoDB</span>
+        <span class="badge">Mongoose</span>
+        <span class="badge">JWT (JSON Web Tokens)</span>
+      </div>
+    </div>
+
+    <div>
+      <h3><i class="fas fa-sitemap"></i> Architecture MVC</h3>
+      <p style="margin-bottom: 10px; font-size: 8pt; line-height: 1.4;">
+        Le projet suit strictement le modèle architectural <strong>Modèle-Vue-Contrôleur (MVC)</strong>
+        adapté pour une API (sans la partie "Vue" HTML) :
+      </p>
+
+      <!-- MVC Flow Diagram -->
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+
+        <!-- Routes Card -->
+        <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 10px 12px; border-radius: 4px;">
+          <div style="font-size: 9pt; font-weight: 700; color: #0284c7; margin-bottom: 4px;">📍 Routes</div>
+          <div style="font-size: 7.5pt; line-height: 1.3; color: #334155;">
+            Dirigent les requêtes HTTP entrantes (GET, POST, PUT, DELETE) vers les méthodes de contrôleur appropriées.
+          </div>
+        </div>
+
+        <!-- Arrow Down -->
+        <div style="text-align: center; color: #64748b; font-size: 14pt; margin: -4px 0;">↓</div>
+
+        <!-- Controllers Card -->
+        <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 12px; border-radius: 4px;">
+          <div style="font-size: 9pt; font-weight: 700; color: #d97706; margin-bottom: 4px;">⚙️ Controllers
+            (Contrôleurs)</div>
+          <div style="font-size: 7.5pt; line-height: 1.3; color: #334155;">
+            Contiennent la logique métier. Ils reçoivent les requêtes, traitent les données, appellent les modèles et
+            renvoient les réponses formatées au client.
+          </div>
+        </div>
+
+        <!-- Arrow Down -->
+        <div style="text-align: center; color: #64748b; font-size: 14pt; margin: -4px 0;">↓</div>
+
+        <!-- Models Card -->
+        <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 10px 12px; border-radius: 4px;">
+          <div style="font-size: 9pt; font-weight: 700; color: #059669; margin-bottom: 4px;">📊 Models (Modèles)</div>
+          <div style="font-size: 7.5pt; line-height: 1.3; color: #334155;">
+            Définissent la structure des données (Schémas Mongoose) pour les Utilisateurs et les Tâches. Ils gèrent les
+            interactions directes avec la base de données MongoDB.
+          </div>
+        </div>
+
+        <!-- Arrow to Database -->
+        <div style="text-align: center; color: #64748b; font-size: 14pt; margin: -4px 0;">↓</div>
+
+        <!-- Database -->
+        <div
+          style="background: #faf5ff; border-left: 4px solid #a855f7; padding: 8px 12px; border-radius: 4px; text-align: center;">
+          <div style="font-size: 9pt; font-weight: 700; color: #9333ea;">🗄️ MongoDB Database</div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- Page 3: server.js & app.js -->
+  <div class="page">
+    <h2>Point d'Entrée & Configuration</h2>
+
+    <h3><i class="fas fa-file-code"></i> Initialisation - server.js</h3>
+
+    <div class="section-description">
+      <p>Ce fichier est le point de départ de l'exécution du serveur. Il charge les variables d'environnement,
+        importe l'application Express configurée, crée le serveur HTTP et démarre l'écoute sur le port défini.
+      </p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-file-code"></i>
+          <span>server.js</span>
+        </div>
+        <pre><code><span class="kw">require</span>(<span class="str">"dotenv"</span>).<span class="fn">config</span>();
+<span class="kw">const</span> http = <span class="kw">require</span>(<span class="str">"http"</span>);
+<span class="kw">const</span> app = <span class="kw">require</span>(<span class="str">"./src/app"</span>);
+
+app.<span class="fn">set</span>(<span class="str">'port'</span>, process.env.PORT);
+
+<span class="kw">const</span> server = http.<span class="fn">createServer</span>(app);
+
+server.<span class="fn">listen</span>(app.<span class="fn">get</span>(<span class="str">'port'</span>));</code></pre>
+      </div>
+    </div>
+
+    <h3><i class="fas fa-cog"></i> Configuration de l'Application - app.js</h3>
+
+    <div class="section-description">
+      <p>Le fichier <code>app.js</code> centralise la configuration complète d'Express avec une architecture de sécurité
+        robuste incluant Helmet, CORS, protection contre les injections NoSQL/XSS, rate limiting, et validation des
+        variables d'environnement.</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-file-code"></i>
+          <span>src/app.js</span>
+        </div>
+        <pre><code><span class="com">// 0.imports</span>
+<span class="kw">const</span> express = <span class="kw">require</span>(<span class="str">"express"</span>);
+<span class="kw">const</span> helmet = <span class="kw">require</span>(<span class="str">"helmet"</span>);
+<span class="kw">const</span> cors = <span class="kw">require</span>(<span class="str">"cors"</span>);
+<span class="kw">const</span> mongoSanitize = <span class="kw">require</span>(<span class="str">"express-mongo-sanitize"</span>);
+<span class="kw">const</span> xss = <span class="kw">require</span>(<span class="str">"xss"</span>);
+<span class="kw">const</span> rateLimit = <span class="kw">require</span>(<span class="str">"express-rate-limit"</span>);
+<span class="kw">const</span> mongoose = <span class="kw">require</span>(<span class="str">"mongoose"</span>);
+<span class="kw">const</span> tasksRouter = <span class="kw">require</span>(<span class="str">"./routes/tasksRoute"</span>);
+<span class="kw">const</span> usersRoute = <span class="kw">require</span>(<span class="str">"./routes/usersRoute"</span>);
+
+<span class="com">// 1.initialisation de express</span>
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+<span class="com">// 2.helmet with enhanced security configuration</span>
+app.<span class="fn">use</span>(<span class="fn">helmet</span>({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: [<span class="str">"'self'"</span>],
+            styleSrc: [<span class="str">"'self'"</span>, <span class="str">"'unsafe-inline'"</span>],
+            scriptSrc: [<span class="str">"'self'"</span>],
+            imgSrc: [<span class="str">"'self'"</span>, <span class="str">"data:"</span>, <span class="str">"https:"</span>],
+        },
+    },
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: <span class="kw">true</span>,
+        preload: <span class="kw">true</span>
+    }
+}));
+
+<span class="com">// 3.cors</span>
+app.<span class="fn">use</span>(<span class="fn">cors</span>());
+
+<span class="com">// 4.body Parsers</span>
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());
+
+<span class="com">// 5.Nettoyage global des données entrantes (NoSQL Injection)</span>
+app.<span class="fn">use</span>((req, res, next) =&gt; {
+    <span class="kw">const</span> { sanitize } = mongoSanitize;
+
+    <span class="kw">if</span> (req.params) <span class="fn">sanitize</span>(req.params);
+    <span class="kw">if</span> (req.query) <span class="fn">sanitize</span>(req.query);
+    <span class="kw">if</span> (req.body) <span class="fn">sanitize</span>(req.body);
+
+    <span class="fn">next</span>();
+})
+
+<span class="com">// Protection XSS</span>
+app.<span class="fn">use</span>((req, res, next) =&gt; {
+    <span class="kw">const</span> sanitize = (obj) =&gt; {
+        <span class="kw">for</span> (<span class="kw">const</span> key <span class="kw">in</span> obj) {
+            <span class="kw">if</span> (<span class="kw">typeof</span> obj[key] === <span class="str">"string"</span>) obj[key] = <span class="fn">xss</span>(obj[key])
+        }
+    }
+
+    <span class="kw">if</span> (req.query) <span class="fn">sanitize</span>(req.query)
+    <span class="kw">if</span> (req.params) <span class="fn">sanitize</span>(req.params)
+    <span class="kw">if</span> (req.body) <span class="fn">sanitize</span>(req.body)
+    <span class="fn">next</span>();
+})
+
+<span class="com">// 6.Limitation des requêtes (Rate Limiting)</span>
+<span class="kw">const</span> globalRateLimit = <span class="fn">rateLimit</span>({
+    windowMs: 15 * 60 * 1000, <span class="com">// 15min</span>
+    max: 100, <span class="com">// 100 requests per 15 minutes</span>
+    message: <span class="str">"Too many requests from this IP, please try again later."</span>,
+    standardHeaders: <span class="kw">true</span>,
+    legacyHeaders: <span class="kw">false</span>,
+});
+
+app.<span class="fn">use</span>(globalRateLimit);
+
+<span class="kw">const</span> loginRateLimit = <span class="fn">rateLimit</span>({
+    windowMs: 15 * 60 * 1000, <span class="com">// 15min</span>
+    max: 5
+});
+
+<span class="com">// 7.Validate critical environment variables</span>
+<span class="kw">if</span> (!process.env.MONGO_URL) {
+    console.<span class="fn">error</span>(<span class="str">"FATAL ERROR: MONGO_URL environment variable is not defined."</span>);
+    process.<span class="fn">exit</span>(1);
+}
+
+<span class="kw">if</span> (!process.env.JWT_SECRET) {
+    console.<span class="fn">error</span>(<span class="str">"FATAL ERROR: JWT_SECRET environment variable is not defined."</span>);
+    process.<span class="fn">exit</span>(1);
+}
+
+<span class="com">// 8.Connexion à MongoDB</span>
+mongoose.<span class="fn">connect</span>(process.env.MONGO_URL).<span class="fn">then</span>((success) =&gt; {
+    console.<span class="fn">log</span>(<span class="str">"Mongo DB Connected Successfully !"</span>)
+}).<span class="fn">catch</span>((error) =&gt; {
+    console.<span class="fn">log</span>(<span class="str">"Error while connecting the MongoDb: "</span>, error)
+})
+
+<span class="com">//9. Gestion des routes</span>
+app.<span class="fn">use</span>(<span class="str">"/api/tasks"</span>, tasksRouter);
+app.<span class="fn">use</span>(<span class="str">'/api/auth'</span>, loginRateLimit, usersRoute);
+
+<span class="com">// 10. 404 Handler</span>
+app.<span class="fn">use</span>((req, res, next) =&gt; {
+    res.<span class="fn">status</span>(404).<span class="fn">json</span>({ message: <span class="str">'Sorry, the page you are looking for doesnt exist !'</span> });
+});
+
+<span class="kw">module</span>.exports = app;</code></pre>
+      </div>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-shield-alt"></i> Middlewares de Sécurité Implémentés</h4>
+      <ul>
+        <li><strong>Helmet avec CSP</strong> : Configuration avancée de Content Security Policy, HSTS avec preload pour
+          forcer HTTPS</li>
+        <li><strong>CORS</strong> : Gestion des requêtes cross-origin</li>
+        <li><strong>NoSQL Injection Protection</strong> : Sanitization automatique de tous les paramètres, query strings
+          et body avec express-mongo-sanitize</li>
+        <li><strong>XSS Protection</strong> : Nettoyage des chaînes de caractères pour bloquer les scripts malveillants
+        </li>
+        <li><strong>Rate Limiting Global</strong> : 100 requêtes max par 15 minutes par IP</li>
+        <li><strong>Rate Limiting Login</strong> : 5 tentatives max par 15 minutes pour prévenir le brute force</li>
+        <li><strong>Environment Validation</strong> : Vérification des variables critiques au démarrage, arrêt si
+          manquantes</li>
+        <li><strong>404 Handler</strong> : Gestion élégante des routes inexistantes</li>
+      </ul>
+    </div>
+
+
+  </div>
+
+  <!-- Page 4: Models -->
+  <div class="page">
+    <h2>Modèles de Données (Mongoose)</h2>
+
+    <h3><i class="fas fa-database"></i> Schéma Tâches</h3>
+
+    <div class="section-description">
+      <p>Ce modèle définit la structure stricte d'une tâche avec validation des données.</p>
+      <p>L'utilisation de l'option <code>enum</code> sur le champ <strong>status</strong> garantit que seules les
+        valeurs valides ("À faire", "En cours", "Terminé") sont acceptées. L'option
+        <code>timestamps: true</code> génère automatiquement les champs <code>createdAt</code> et
+        <code>updatedAt</code>.
+      </p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-database"></i>
+          <span>src/models/tasksModel.js</span>
+        </div>
+        <pre><code><span class="kw">const</span> mongoose = <span class="kw">require</span>(<span class="str">"mongoose"</span>);
+
+<span class="kw">const</span> taskStatus = [<span class="str">"À faire"</span>, <span class="str">"En cours"</span>, <span class="str">"Terminé"</span>];
+
+<span class="kw">const</span> tasksSchema = mongoose.<span class="obj">Schema</span>(
+    {
+        titre: { <span class="kw">type</span>: <span class="obj">String</span>, required: <span class="kw">true</span> },
+        description: { <span class="kw">type</span>: <span class="obj">String</span>, required: <span class="kw">false</span> },
+        status: { 
+            <span class="kw">type</span>: <span class="obj">String</span>, 
+            <span class="kw">enum</span>: taskStatus, 
+            <span class="kw">default</span>: taskStatus[0] 
+        }
+    },
+    {
+        timestamps: <span class="kw">true</span>
+    }
+);
+
+<span class="kw">module</span>.exports = mongoose.<span class="fn">model</span>(<span class="str">'tasks'</span>, tasksSchema);</code></pre>
+      </div>
+    </div>
+
+    <h3><i class="fas fa-user"></i> Schéma Utilisateur</h3>
+
+    <div class="section-description">
+      <p>Modèle simple pour l'authentification avec validation d'unicité de l'email.</p>
+      <p>Le plugin <code>mongoose-unique-validator</code> est essentiel : il assure qu'il est impossible de créer
+        deux comptes avec la même adresse email, renvoyant une erreur claire avant même de tenter l'insertion en
+        base.</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-user"></i>
+          <span>src/models/usersModel.js</span>
+        </div>
+        <pre><code><span class="kw">const</span> mongoose = <span class="kw">require</span>(<span class="str">"mongoose"</span>);
+<span class="kw">const</span> uniqueValidator = <span class="kw">require</span>(<span class="str">"mongoose-unique-validator"</span>);
+
+<span class="kw">const</span> usersSchema = mongoose.<span class="obj">Schema</span>({
+    email: { <span class="kw">type</span>: <span class="obj">String</span>, required: <span class="kw">true</span>, unique: <span class="kw">true</span> },
+    password: { <span class="kw">type</span>: <span class="obj">String</span>, required: <span class="kw">true</span> }
+})
+
+usersSchema.<span class="fn">plugin</span>(uniqueValidator)
+
+<span class="kw">module</span>.exports = mongoose.<span class="fn">model</span>(<span class="str">'users'</span>, usersSchema);</code></pre>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- Page 5: Middleware Auth -->
+  <div class="page">
+    <h2>Sécurité & Authentification</h2>
+
+    <h3><i class="fas fa-shield-alt"></i> Middleware JWT</h3>
+
+    <div class="section-description">
+      <p>Ce middleware est le gardien des routes protégées. Il intercepte chaque requête vers l'API des tâches et
+        vérifie l'authentification avant d'autoriser l'accès aux ressources.</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-shield-alt"></i>
+          <span>src/middlewares/auth.js</span>
+        </div>
+        <pre><code><span class="kw">const</span> jwt = <span class="kw">require</span>(<span class="str">"jsonwebtoken"</span>);
+<span class="kw">const</span> SECRET_TOKEN = process.env.SECRET_TOKEN;
+
+<span class="kw">module</span>.exports = (req, res, next) =&gt; {
+    <span class="kw">try</span> {
+        <span class="kw">const</span> token = req.headers.authorization.<span class="fn">split</span>(<span class="str">" "</span>)[1];
+        <span class="kw">const</span> decodeToken = jwt.<span class="fn">verify</span>(token, SECRET_TOKEN);
+        <span class="kw">const</span> userId = decodeToken.userId;
+        
+        req.auth = {
+            userId: userId
+        };
+        <span class="fn">next</span>();
+    } <span class="kw">catch</span> {
+        res.<span class="fn">status</span>(403).<span class="fn">json</span>({ message: <span class="str">"unauthorized"</span>})
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-cogs"></i> Fonctionnement</h4>
+      <ol>
+        <li>Extrait le token du header <code>Authorization</code> (Format "Bearer TOKEN")</li>
+        <li>Vérifie la validité du token avec <code>jwt.verify</code> et la clé secrète</li>
+        <li>Si valide, attache l'ID utilisateur à l'objet <code>req</code> pour les contrôleurs suivants</li>
+        <li>Si invalide ou absent, renvoie une erreur 403 Forbidden</li>
+      </ol>
+    </div>
+
+    <h3><i class="fas fa-key"></i> Contrôleur Authentification - Login</h3>
+
+    <div class="section-description">
+      <p>Cette fonction gère l'authentification des utilisateurs en vérifiant les identifiants et en générant un
+        token JWT pour les sessions authentifiées.</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-key"></i>
+          <span>src/controllers/userController.js (Login)</span>
+        </div>
+        <pre><code><span class="kw">exports</span>.login = (req, res, next) =&gt; {
+    Users.<span class="fn">findOne</span>({ email: req.body.email }).<span class="fn">then</span>((user) =&gt; {
+        <span class="kw">if</span> (!user) res.<span class="fn">status</span>(404).<span class="fn">json</span>({ message: <span class="str">"Error !"</span> });
+
+        bycript.<span class="fn">compare</span>(req.body.password, user.password)
+            .<span class="fn">then</span>((valid) =&gt; {
+                <span class="kw">if</span> (!valid) res.<span class="fn">status</span>(404).<span class="fn">json</span>({ message: <span class="str">"Error !"</span> });
+                
+                res.<span class="fn">status</span>(201).<span class="fn">json</span>({
+                    userId: user._id,
+                    token: jwt.<span class="fn">sign</span>(
+                        { email: user.email },
+                        SECRET_TOKEN,
+                        { expiresIn: <span class="str">'24h'</span> }
+                    )
+                })
+            });
+    })
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-cogs"></i> Fonctionnement</h4>
+      <ol>
+        <li>Recherche l'utilisateur dans la base de données par email</li>
+        <li>Compare le mot de passe fourni avec le hash stocké (bcrypt)</li>
+        <li>Si valide, génère un token JWT avec expiration de 24h</li>
+        <li>Retourne le token et l'ID utilisateur pour les requêtes futures</li>
+      </ol>
+    </div>
+
+
+  </div>
+
+  <!-- Page 6: Task Controller -->
+  <div class="page">
+    <h2>Contrôleur des Tâches</h2>
+
+    <h3><i class="fas fa-tasks"></i> Opérations CRUD</h3>
+
+    <div class="section-description">
+      <p>Ce contrôleur implémente les opérations fondamentales de l'API pour la gestion complète des tâches
+        (Create, Read, Update, Delete).</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-tasks"></i>
+          <span>src/controllers/taskController.js</span>
+        </div>
+        <pre><code><span class="kw">const</span> Tasks = <span class="kw">require</span>(<span class="str">"../models/tasksModel"</span>);
+
+<span class="kw">exports</span>.getTasks = (req, res, next) =&gt; {
+    Tasks.<span class="fn">find</span>().<span class="fn">then</span>((tasks) =&gt; {
+        res.<span class="fn">status</span>(200).<span class="fn">json</span>(tasks);
+    }).<span class="fn">catch</span>((error) =&gt; {
+        res.<span class="fn">status</span>(400).<span class="fn">json</span>({error});
+    })
+}
+
+<span class="kw">exports</span>.addTask = (req, res, next) =&gt; {
+    <span class="kw">delete</span> req.body._id;
+    <span class="kw">const</span> task = <span class="kw">new</span> <span class="obj">Tasks</span>({
+        ...req.body
+    });
+    
+    task.<span class="fn">save</span>().<span class="fn">then</span>(() =&gt; {
+        res.<span class="fn">status</span>(201).<span class="fn">json</span>({message: <span class="str">"added Successfully !"</span>});
+    }).<span class="fn">catch</span>((error) =&gt; {
+        res.<span class="fn">status</span>(400).<span class="fn">json</span>({ error });
+    })
+}
+
+<span class="kw">exports</span>.updateTask = (req, res, next) =&gt; {
+    Tasks.<span class="fn">updateOne</span>({ _id: req.params.id }, { ...req.body })
+        .<span class="fn">then</span>(() =&gt; {
+            res.<span class="fn">status</span>(201).<span class="fn">json</span>({message: <span class="str">"updated !"</span>});
+        })
+        .<span class="fn">catch</span>((error) =&gt; {
+            res.<span class="fn">status</span>(400).<span class="fn">json</span>({ error });
+        })
+} 
+
+<span class="kw">exports</span>.removeTask = (req, res, next) =&gt; {
+    Tasks.<span class="fn">deleteOne</span>({ _id: req.params.id }).<span class="fn">then</span>(() =&gt; {
+        res.<span class="fn">status</span>(204).<span class="fn">json</span>({ message: <span class="str">"removed !"</span> });
+    })
+    .<span class="fn">catch</span>((error) =&gt; {
+        res.<span class="fn">status</span>(400).<span class="fn">json</span>({ error });
+    })
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-cogs"></i> Fonctionnement</h4>
+      <ul>
+        <li><strong>getTasks</strong> : Récupère la liste complète des tâches via <code>find()</code></li>
+        <li><strong>addTask</strong> : Crée une nouvelle tâche. Supprime <code>_id</code> par sécurité pour
+          laisser MongoDB gérer l'indexation</li>
+        <li><strong>updateTask</strong> : Modifie une tâche existante en utilisant l'ID passé en paramètre URL
+        </li>
+        <li><strong>removeTask</strong> : Supprime une tâche en ciblant le document par son ID</li>
+      </ul>
+    </div>
+
+
+  </div>
+
+  <!-- Page 7: Routes -->
+  <div class="page">
+    <h2>Définition des Routes</h2>
+
+    <h3><i class="fas fa-route"></i> Routage Tâches - Routes Protégées</h3>
+
+    <div class="section-description">
+      <p>Ce fichier associe les URLs HTTP aux fonctions du contrôleur. Toutes les routes sont protégées par le
+        middleware d'authentification JWT.</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-route"></i>
+          <span>src/routes/tasksRoute.js</span>
+        </div>
+        <pre><code><span class="kw">const</span> express = <span class="kw">require</span>(<span class="str">"express"</span>);
+<span class="kw">const</span> authMiddleware = <span class="kw">require</span>(<span class="str">"../middlewares/auth"</span>);
+<span class="kw">const</span> tasksController = <span class="kw">require</span>(<span class="str">"../controllers/taskController"</span>);
+
+<span class="kw">const</span> router = express.<span class="fn">Router</span>();
+
+<span class="com">// Routes protégées par authMiddleware</span>
+router.<span class="fn">get</span>(<span class="str">'/'</span>, authMiddleware, tasksController.getTasks);
+router.<span class="fn">get</span>(<span class="str">'/:id'</span>, authMiddleware, tasksController.getOneTask);
+router.<span class="fn">post</span>(<span class="str">'/'</span>, authMiddleware,  tasksController.addTask);
+router.<span class="fn">put</span>(<span class="str">'/:id'</span>, authMiddleware, tasksController.updateTask);
+router.<span class="fn">delete</span>(<span class="str">'/:id'</span>, authMiddleware, tasksController.removeTask);
+
+<span class="kw">module</span>.exports = router;</code></pre>
+      </div>
+    </div>
+
+    <div class="functionality">
+      <h4><i class="fas fa-info-circle"></i> Important</h4>
+      <p>Le point crucial est l'injection du <code>authMiddleware</code> en deuxième argument de chaque route.
+        Cela signifie que <strong>toutes</strong> ces routes sont verrouillées : si le middleware ne valide pas
+        le token, le contrôleur ne sera jamais exécuté.</p>
+    </div>
+
+    <h3><i class="fas fa-sign-in-alt"></i> Routage Authentification - Routes Publiques</h3>
+
+    <div class="section-description">
+      <p>Contrairement aux tâches, ces routes sont publiques (pas de middleware d'authentification). C'est logique
+        car un utilisateur doit pouvoir s'inscrire ou se connecter sans avoir de token au préalable.</p>
+    </div>
+
+    <div class="content-split">
+      <div class="code-column">
+        <div class="file-header">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>src/routes/usersRoute.js</span>
+        </div>
+        <pre><code><span class="kw">const</span> express = <span class="kw">require</span>(<span class="str">"express"</span>);
+<span class="kw">const</span> userController = <span class="kw">require</span>(<span class="str">"../controllers/userController"</span>);
+
+<span class="kw">const</span> router = express.<span class="fn">Router</span>();
+
+<span class="com">// Routes publiques</span>
+router.<span class="fn">post</span>(<span class="str">'/login'</span>, userController.login);
+router.<span class="fn">post</span>(<span class="str">'/signup'</span>, userController.signUp);
+
+<span class="kw">module</span>.exports = router;</code></pre>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- Page 8: Diagrammes -->
+  <div class="page">
+    <h2>Architecture & Flux de Données</h2>
+
+    <h3><i class="fas fa-project-diagram"></i> Flux d'Authentification JWT</h3>
+    <div class="diagram-box">
+      <div class="flow-step">Client (Navigateur)</div>
+      <span class="arrow"><i class="fas fa-arrow-right"></i> Envoie Email/Pass</span>
+      <div class="flow-step">API /login</div>
+      <span class="arrow"><i class="fas fa-arrow-right"></i> Vérification</span>
+      <div class="flow-step">Génération Token</div>
+
+      <div class="flow-step">Client Stock Token</div>
+      <span class="arrow"><i class="fas fa-arrow-left"></i> Réponse + Token</span>
+    </div>
+
+    <h3><i class="fas fa-sync-alt"></i> Cycle de Vie d'une Requête Sécurisée</h3>
+    <div class="diagram-box">
+      <div class="flow-step" style="border-style: dashed">Requête HTTP<br><small>Header: Bearer Token</small>
+      </div>
+      <br>
+      <span class="arrow"><i class="fas fa-arrow-down"></i></span>
+      <br>
+      <div class="flow-step">App.js<br><small>Helmet / CORS / RateLimit</small></div>
+      <br>
+      <span class="arrow"><i class="fas fa-arrow-down"></i></span>
+      <br>
+      <div class="flow-step">Router<br><small>/api/tasks</small></div>
+      <span class="arrow"><i class="fas fa-arrow-right"></i></span>
+      <div class="flow-step" style="background: #eff6ff">Auth Middleware<br><small>Vérifie Token</small></div>
+      <br>
+      <span class="arrow"><i class="fas fa-arrow-down"></i></span>
+      <br>
+      <div class="flow-step">Controller<br><small>Exécute Logique</small></div>
+      <span class="arrow"><i class="fas fa-arrow-right"></i></span>
+      <div class="flow-step">MongoDB</div>
+    </div>
+
+
+  </div>
+
+  <!-- Page 9: Guide API -->
+  <div class="page">
+    <h2>Guide d'Utilisation de l'API</h2>
+
+    <h3><i class="fas fa-globe"></i> Endpoints Publics</h3>
+    <table>
+      <thead>
+        <tr>
+          <th width="15%">Méthode</th>
+          <th width="35%">Endpoint</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method POST">POST</span></td>
+          <td>/api/auth/signup</td>
+          <td>Création d'un nouveau compte utilisateur</td>
+        </tr>
+        <tr>
+          <td><span class="method POST">POST</span></td>
+          <td>/api/auth/login</td>
+          <td>Connexion et obtention du JWT</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3><i class="fas fa-lock"></i> Endpoints Tâches (Authentification Requise)</h3>
+    <p><em style="color: var(--primary); font-size: 10pt">Header requis : Authorization: Bearer
+        &lt;votre_token&gt;</em></p>
+    <table>
+      <thead>
+        <tr>
+          <th width="15%">Méthode</th>
+          <th width="35%">Endpoint</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method GET">GET</span></td>
+          <td>/api/tasks</td>
+          <td>Récupérer toutes les tâches</td>
+        </tr>
+        <tr>
+          <td><span class="method GET">GET</span></td>
+          <td>/api/tasks/:id</td>
+          <td>Récupérer une tâche par ID</td>
+        </tr>
+        <tr>
+          <td><span class="method POST">POST</span></td>
+          <td>/api/tasks</td>
+          <td>Créer une nouvelle tâche</td>
+        </tr>
+        <tr>
+          <td><span class="method PUT">PUT</span></td>
+          <td>/api/tasks/:id</td>
+          <td>Mettre à jour une tâche</td>
+        </tr>
+        <tr>
+          <td><span class="method DELETE">DELETE</span></td>
+          <td>/api/tasks/:id</td>
+          <td>Supprimer une tâche</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3><i class="fas fa-code"></i> Exemple de format JSON (Tâche)</h3>
+    <div class="code-column" style="margin-top: 15px">
+      <div class="file-header">
+        <i class="fas fa-file-code"></i>
+        <span>Format JSON - Tâche</span>
+      </div>
+      <pre><code>{
+    <span class="str">"_id"</span>: <span class="str">"65a45b9..."</span>,
+    <span class="str">"titre"</span>: <span class="str">"Préparer la documentation"</span>,
+    <span class="str">"description"</span>: <span class="str">"Détailler les endpoints API"</span>,
+    <span class="str">"status"</span>: <span class="str">"En cours"</span>,
+    <span class="str">"createdAt"</span>: <span class="str">"2026-01-15T10:00:00.000Z"</span>,
+    <span class="str">"updatedAt"</span>: <span class="str">"2026-01-15T10:30:00.000Z"</span>
+}</code></pre>
+    </div>
+
+
+  </div>
+
+</body>
+
+</html>
