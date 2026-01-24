@@ -4,7 +4,7 @@ exports.getTasks = (req, res, next) => {
     Tasks.find().then((tasks) => {
         res.status(200).json(tasks);
     }).catch((error) => {
-        res.status(400).json({error});
+        res.status(400).json({ error });
     })
 }
 
@@ -21,9 +21,9 @@ exports.addTask = (req, res, next) => {
     const task = new Tasks({
         ...req.body
     });
-    
+
     task.save().then(() => {
-        res.status(201).json({message: "added Successfully !"});
+        res.status(201).json({ message: "added Successfully !" });
     }).catch((error) => {
         res.status(400).json({ error });
     })
@@ -31,12 +31,20 @@ exports.addTask = (req, res, next) => {
 
 exports.updateTask = (req, res, next) => {
     delete req.body._id;
+
+    const validStatuses = ["À faire", "En cours", "Terminé"];
+    if (req.body.status && !validStatuses.includes(req.body.status)) {
+        return res.status(400).json({
+            error: `Invalid status. Allowed values: ${validStatuses.join(", ")}`
+        });
+    }
+
     Tasks.updateOne({ _id: req.params.id }, { ...req.body }).then(() => {
-        res.status(201).json({message: "updated Successfully !"});
+        res.status(201).json({ message: "updated Successfully !" });
     }).catch((error) => {
         res.status(400).json({ error });
     })
-} 
+}
 
 exports.removeTask = (req, res, next) => {
     Tasks.deleteOne({ _id: req.params.id }).then(() => {
