@@ -441,8 +441,8 @@
     </div>
 
     <div class="page-footer">
-      <a href="https://github.com/abdelmounaimoulaid/gestions-des-taches"
-        target="_blank">https://github.com/abdelmounaimoulaid/gestions-des-taches</a>
+      <a href="https://github.com/abdelmounaimoulaid/gestion-des-taches-backend-nodejs"
+        target="_blank">https://github.com/abdelmounaimoulaid/gestion-des-taches-backend-nodejs</a>
     </div>
   </div>
 
@@ -736,8 +736,8 @@ app.<span class="fn">use</span>(globalRateLimit);
     process.<span class="fn">exit</span>(1);
 }
 
-<span class="kw">if</span> (!process.env.JWT_SECRET) {
-    console.<span class="fn">error</span>(<span class="str">"FATAL ERROR: JWT_SECRET environment variable is not defined."</span>);
+<span class="kw">if</span> (!process.env.SECRET_TOKEN) {
+    console.<span class="fn">error</span>(<span class="str">"FATAL ERROR: SECRET_TOKEN environment variable is not defined."</span>);
     process.<span class="fn">exit</span>(1);
 }
 
@@ -987,7 +987,7 @@ usersSchema.<span class="fn">plugin</span>(uniqueValidator)
     });
     
     task.<span class="fn">save</span>().<span class="fn">then</span>(() =&gt; {
-        res.<span class="fn">status</span>(201).<span class="fn">json</span>({message: <span class="str">"added Successfully !"</span>});
+        res.<span class="fn">status</span>(200).<span class="fn">json</span>({message: <span class="str">"added Successfully !"</span>});
     }).<span class="fn">catch</span>((error) =&gt; {
         res.<span class="fn">status</span>(400).<span class="fn">json</span>({ error });
     })
@@ -1223,6 +1223,61 @@ router.<span class="fn">post</span>(<span class="str">'/signup'</span>, userCont
 }</code></pre>
     </div>
 
+
+  </div>
+
+  <!-- Page: Postman API Testing Screenshots -->
+  <div class="page">
+    <h2>Tests API avec Postman</h2>
+
+    <div class="section-description">
+      <p>
+        Voici les captures d'écran des tests Postman démontrant le fonctionnement de tous les endpoints de l'API.
+        Ces tests valident l'inscription, la connexion, et les opérations CRUD sur les tâches.
+      </p>
+    </div>
+
+    <h3><i class="fas fa-user-plus"></i> Inscription (Signup)</h3>
+    <div style="margin-bottom: 20px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+      <img
+        src="file:///Users/abdelmonaimoulaid/.gemini/antigravity/brain/242538cf-7656-47b4-98d6-17fe592ca165/uploaded_media_0_1769254057499.png"
+        alt="Postman - Signup Endpoint" style="width: 100%; display: block;">
+    </div>
+
+    <h3><i class="fas fa-sign-in-alt"></i> Connexion (Login)</h3>
+    <div style="margin-bottom: 20px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+      <img
+        src="file:///Users/abdelmonaimoulaid/.gemini/antigravity/brain/242538cf-7656-47b4-98d6-17fe592ca165/uploaded_media_1_1769254057499.png"
+        alt="Postman - Login Endpoint" style="width: 100%; display: block;">
+    </div>
+
+    <h3><i class="fas fa-list"></i> Récupérer les Tâches (GET Tasks)</h3>
+    <div style="margin-bottom: 20px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+      <img
+        src="file:///Users/abdelmonaimoulaid/.gemini/antigravity/brain/242538cf-7656-47b4-98d6-17fe592ca165/uploaded_media_2_1769254057499.png"
+        alt="Postman - Get Tasks Endpoint" style="width: 100%; display: block;">
+    </div>
+
+    <h3><i class="fas fa-plus-circle"></i> Créer une Tâche (POST Task)</h3>
+    <div style="margin-bottom: 20px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+      <img
+        src="file:///Users/abdelmonaimoulaid/.gemini/antigravity/brain/242538cf-7656-47b4-98d6-17fe592ca165/uploaded_media_3_1769254057499.png"
+        alt="Postman - Create Task Endpoint" style="width: 100%; display: block;">
+    </div>
+
+    <h3><i class="fas fa-edit"></i> Mettre à Jour une Tâche (PUT Task)</h3>
+    <div style="margin-bottom: 20px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+      <img
+        src="file:///Users/abdelmonaimoulaid/.gemini/antigravity/brain/242538cf-7656-47b4-98d6-17fe592ca165/uploaded_media_4_1769254057499.png"
+        alt="Postman - Update Task Endpoint" style="width: 100%; display: block;">
+    </div>
+
+    <h3><i class="fas fa-trash-alt"></i> Supprimer une Tâche (DELETE Task)</h3>
+    <div style="margin-bottom: 20px; border: 2px solid var(--border-color); border-radius: 8px; overflow: hidden;">
+      <img
+        src="file:///Users/abdelmonaimoulaid/.gemini/antigravity/brain/242538cf-7656-47b4-98d6-17fe592ca165/uploaded_media_1769254237076.png"
+        alt="Postman - Delete Task Endpoint" style="width: 100%; display: block;">
+    </div>
 
   </div>
 

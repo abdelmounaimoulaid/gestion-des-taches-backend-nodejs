@@ -82,8 +82,8 @@ if (!process.env.MONGO_URL) {
     process.exit(1);
 }
 
-if (!process.env.JWT_SECRET) {
-    console.error("FATAL ERROR: JWT_SECRET environment variable is not defined.");
+if (!process.env.SECRET_TOKEN) {
+    console.error("FATAL ERROR: SECRET_TOKEN environment variable is not defined.");
     process.exit(1);
 }
 

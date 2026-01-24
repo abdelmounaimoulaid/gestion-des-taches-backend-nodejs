@@ -40,7 +40,7 @@ exports.updateTask = (req, res, next) => {
 
 exports.removeTask = (req, res, next) => {
     Tasks.deleteOne({ _id: req.params.id }).then(() => {
-        res.status(204).json({ message: "removed Successfully !" });
+        res.status(200).json({ message: "removed Successfully !" });
     }).catch((error) => {
         res.status(400).json({ error });
     })
