@@ -994,9 +994,19 @@ usersSchema.<span class="fn">plugin</span>(uniqueValidator)
 }
 
 <span class="kw">exports</span>.updateTask = (req, res, next) =&gt; {
+    <span class="kw">delete</span> req.body._id;
+    
+    <span class="com">// Validate status if provided</span>
+    <span class="kw">const</span> validStatuses = [<span class="str">"À faire"</span>, <span class="str">"En cours"</span>, <span class="str">"Terminé"</span>];
+    <span class="kw">if</span> (req.body.status &amp;&amp; !validStatuses.<span class="fn">includes</span>(req.body.status)) {
+        <span class="kw">return</span> res.<span class="fn">status</span>(400).<span class="fn">json</span>({ 
+            error: <span class="str">`Invalid status. Allowed values: ${validStatuses.join(", ")}`</span> 
+        });
+    }
+    
     Tasks.<span class="fn">updateOne</span>({ _id: req.params.id }, { ...req.body })
         .<span class="fn">then</span>(() =&gt; {
-            res.<span class="fn">status</span>(201).<span class="fn">json</span>({message: <span class="str">"updated !"</span>});
+            res.<span class="fn">status</span>(201).<span class="fn">json</span>({message: <span class="str">"updated Successfully !"</span>});
         })
         .<span class="fn">catch</span>((error) =&gt; {
             res.<span class="fn">status</span>(400).<span class="fn">json</span>({ error });
@@ -1020,7 +1030,9 @@ usersSchema.<span class="fn">plugin</span>(uniqueValidator)
         <li><strong>getTasks</strong> : Récupère la liste complète des tâches via <code>find()</code></li>
         <li><strong>addTask</strong> : Crée une nouvelle tâche. Supprime <code>_id</code> par sécurité pour
           laisser MongoDB gérer l'indexation</li>
-        <li><strong>updateTask</strong> : Modifie une tâche existante en utilisant l'ID passé en paramètre URL
+        <li><strong>updateTask</strong> : Modifie une tâche existante en utilisant l'ID passé en paramètre URL.
+          Valide le champ <code>status</code> pour n'accepter que les valeurs de l'enum ("À faire", "En cours",
+          "Terminé") avant la mise à jour
         </li>
         <li><strong>removeTask</strong> : Supprime une tâche en ciblant le document par son ID</li>
       </ul>
