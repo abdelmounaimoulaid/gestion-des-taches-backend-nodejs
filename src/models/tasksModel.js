@@ -9,7 +9,8 @@ const tasksSchema = mongoose.Schema(
         status: { type: String, enum: taskStatus, required: true, default: taskStatus[0] }
     },
     {
-        timestamps: true
+        timestamps: true,
+        versionKey: false
     }
 );
 

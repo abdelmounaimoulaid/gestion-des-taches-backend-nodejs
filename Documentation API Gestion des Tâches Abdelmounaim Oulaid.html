@@ -793,7 +793,8 @@ app.<span class="fn">use</span>((req, res, next) =&gt; {
       <p>L'utilisation de l'option <code>enum</code> sur le champ <strong>status</strong> garantit que seules les
         valeurs valides ("À faire", "En cours", "Terminé") sont acceptées. L'option
         <code>timestamps: true</code> génère automatiquement les champs <code>createdAt</code> et
-        <code>updatedAt</code>.
+        <code>updatedAt</code>. L'option <code>versionKey: false</code> désactive le champ <code>__v</code> de MongoDB
+        pour des réponses JSON plus propres.
       </p>
     </div>
 
@@ -814,11 +815,13 @@ app.<span class="fn">use</span>((req, res, next) =&gt; {
         status: { 
             <span class="kw">type</span>: <span class="obj">String</span>, 
             <span class="kw">enum</span>: taskStatus, 
+            required: <span class="kw">true</span>,
             <span class="kw">default</span>: taskStatus[0] 
         }
     },
     {
-        timestamps: <span class="kw">true</span>
+        timestamps: <span class="kw">true</span>,
+        versionKey: <span class="kw">false</span>
     }
 );
 
